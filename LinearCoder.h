@@ -10,6 +10,7 @@
 
 class LinearCoder : public Coder {
  public:
+  LinearCoder();
   LinearCoder(int signal_length);
 
   int GetCodeLength();

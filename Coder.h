@@ -10,11 +10,12 @@
 // TODO: make Coder abstract;
 class Coder {
  public:
+  Coder() : signal_length_(0) {}
   Coder(int signal_length) : signal_length_(signal_length) {}
   ~Coder() {};
 
-  int GetInputLength() const { return signal_length_; };
-  void SetInputLength(int new_signal_length) { signal_length_ = new_signal_length; }
+  int GetSignalLength() const { return signal_length_; };
+  void SetSignalLength(int new_signal_length) { signal_length_ = new_signal_length; }
 
  protected:
   int signal_length_;

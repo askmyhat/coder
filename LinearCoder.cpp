@@ -1,5 +1,6 @@
 #include "LinearCoder.h"
 
+LinearCoder::LinearCoder() : Coder() {}
 LinearCoder::LinearCoder(int signal_length) : Coder(signal_length) {}
 
 int LinearCoder::GetCodeLength() { return code_length_; }
