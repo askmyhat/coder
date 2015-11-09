@@ -15,8 +15,10 @@ class ReedMullerCoder : public LinearCoder {
   int getDistance();
 
  private:
+  int order_;
+  int length_power_;
   static long long Binomial(int n, int k);
-  static long long Factorial(int n);
+  static int MonomDegreeWeight(const std::valarray<bool>& monom_degree);
   static bool MonomDegreeOrder(const std::valarray<bool>& lhs, const std::valarray<bool>& rhs);
 };
 
