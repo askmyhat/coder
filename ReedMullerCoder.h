@@ -12,15 +12,32 @@ class ReedMullerCoder : public LinearCoder {
  public:
   ReedMullerCoder(int order, int length_power);
   std::valarray<bool> Decode(const std::valarray<bool>& code);
-  int getDistance();
+  int distance();
 
- private:
+ protected:
   int order_;
   int length_power_;
-  static long long Binomial(int n, int k);
-  static int MonomDegreeWeight(const std::valarray<bool>& monom_degree);
+  static int Binomial(int n, int k);
   static bool MonomDegreeOrder(const std::valarray<bool>& lhs, const std::valarray<bool>& rhs);
 };
+
+/*
+class ReedMullerSystematicCoder : public ReedMullerCoder {
+ public:
+  ReedMullerSystematicCoder(int order, int length_power);
+
+  std::valarray<bool> Code(const std::valarray<bool>& code);
+  std::valarray<bool> Decode(const std::valarray<bool>& code);
+  std::valarray<bool> ToSystematic(const std::valarray<bool>& code);
+  std::valarray<bool> FromSystematic(const std::valarray<bool>& code);
+
+  void PrintSystematicFactor();
+
+ private:
+  std::valarray<bool> systematic_factor_;
+  std::valarray<bool> systematic_divider_;
+};
+*/
 
 #endif // REED_MULLER_CODER_H
 

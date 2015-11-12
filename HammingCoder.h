@@ -12,7 +12,7 @@ class HammingCoder : public LinearCoder {
  public:
   HammingCoder (int signal_length);
   std::valarray<bool> Decode(const std::valarray<bool>& code);
-  int getDistance();
+  int distance();
 };
 
 #endif // HAMMING_CODER_H

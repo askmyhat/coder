@@ -12,17 +12,24 @@ class Coder {
  public:
   Coder() : signal_length_(0) {}
   Coder(int signal_length) : signal_length_(signal_length) {}
-  ~Coder() {};
+  virtual ~Coder() {};
 
-  int GetSignalLength() const { return signal_length_; };
-  void SetSignalLength(int new_signal_length) { signal_length_ = new_signal_length; }
+  int signal_length() const { return signal_length_; };
+
+  static std::size_t Weight(const std::valarray<bool>& string) {
+    std::size_t weight = 0;
+    for (int bit = 0; bit < string.size(); ++bit) {
+      weight += static_cast<int>(string[bit]);
+    }
+    return weight;
+  }
 
  protected:
   int signal_length_;
 
-//  std::vector<bool> Code(const std::vector<<bool>& word) const;
-//  std::vector<bool> Decode(const std::vector<bool>& word) const;
-//  int getDistance();
+  virtual std::valarray<bool> Code(const std::valarray<bool>& word) = 0;
+  virtual std::valarray<bool> Decode(const std::valarray<bool>& word) = 0;
+  virtual int distance() = 0;
 };
 
 #endif // CODER_H

@@ -3,29 +3,45 @@
 LinearCoder::LinearCoder() : Coder() {}
 LinearCoder::LinearCoder(int signal_length) : Coder(signal_length) {}
 
-int LinearCoder::GetCodeLength() { return code_length_; }
-double LinearCoder::GetSpeed() { return static_cast<double>(signal_length_) / code_length_; }
+int LinearCoder::code_length() {
+  return code_length_;
+}
 
-std::valarray<bool> LinearCoder::Code(const std::valarray<bool>& signal) {
-  std::valarray<bool> code(code_length_);
-  std::valarray<bool> generator_column(signal_length_);
+double LinearCoder::speed() {
+  return static_cast<double>(signal_length_) / code_length_;
+}
 
-  for (int column = 0; column < code_length_; ++column) {
-    generator_column = generator_[std::slice(column, signal_length_, code_length_)];
-    generator_column *= signal;
-    code[column] = 0;
-    for (int j = 0; j < signal_length_; ++j) {
-      code[column] ^= generator_column[j];
+std::valarray<bool> LinearCoder::MultiplyVectorToMatrix(const std::valarray<bool>& string, const std::valarray<bool>& matrix) {
+  int rows = string.size();
+  int columns = matrix.size() / rows;
+
+  std::valarray<bool> product(columns);
+  std::valarray<bool> column(rows);
+
+  for (int column_index = 0; column_index < columns; ++column_index) {
+    column = matrix[std::slice(column_index, rows, columns)];
+    column *= string;
+    product[column_index] = 0;
+    for (int j = 0; j < rows; ++j) {
+      product[column_index] ^= column[j];
     }
   }
 
-  return code;
+  return product;
+}
+
+std::valarray<bool> LinearCoder::Code(const std::valarray<bool>& signal) {
+  return MultiplyVectorToMatrix(signal, generator_);
 }
 
 void LinearCoder::PrintGenerator() {
-  for (int i = 0; i < generator_.size(); ++i) {
-    std::cout << generator_[i] << " ";
-    if ((i + 1) % code_length_ == 0) {
+  PrintMatrix(generator_, code_length_);
+}
+
+void LinearCoder::PrintMatrix(const std::valarray<bool>& matrix, int columns) {
+  for (int i = 0; i < matrix.size(); ++i) {
+    std::cout << matrix[i] << " ";
+    if ((i + 1) % columns == 0) {
       std::cout << std::endl;
     }
   }

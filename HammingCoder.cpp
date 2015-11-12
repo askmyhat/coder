@@ -20,7 +20,7 @@ HammingCoder::HammingCoder(int signal_length) :
       } else {
         generator_[i] = (row == column);
       }
-      i++;
+      ++i;
     }
   }
 }
@@ -37,7 +37,7 @@ std::valarray<bool> HammingCoder::Decode(const std::valarray<bool>& code) {
   for (int row = 1; row <= code_length_; ++row) {
     for (int column = 1; column <= check_length; ++column) {
       decode_matrix[i] = static_cast<bool>(row & (1 << (check_length - column)));
-      i++;
+      ++i;
     }
   }
 
@@ -58,13 +58,13 @@ std::valarray<bool> HammingCoder::Decode(const std::valarray<bool>& code) {
     if (bit_number == broken_bit) {
       decoded[i] ^= 1;
     }
-    i++;
+    ++i;
   }
 
   return decoded;
 }
 
-int HammingCoder::getDistance() {
+int HammingCoder::distance() {
   return 3;
 }
 
