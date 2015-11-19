@@ -12,7 +12,7 @@ int main() {
   int second_param = 5;
   int iterations = 3;
 
-  ReedMullerCoder c(first_param, second_param);
+  ReedMullerSystematicCoder c(first_param, second_param);
   int signal_length = c.signal_length();
   int code_length = c.code_length();
   int error_length = c.distance() / 2 - 1;

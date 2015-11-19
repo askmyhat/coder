@@ -3,14 +3,6 @@
 LinearCoder::LinearCoder() : Coder() {}
 LinearCoder::LinearCoder(int signal_length) : Coder(signal_length) {}
 
-int LinearCoder::code_length() {
-  return code_length_;
-}
-
-double LinearCoder::speed() {
-  return static_cast<double>(signal_length_) / code_length_;
-}
-
 std::valarray<bool> LinearCoder::MultiplyVectorToMatrix(const std::valarray<bool>& string, const std::valarray<bool>& matrix) {
   int rows = string.size();
   int columns = matrix.size() / rows;
@@ -39,7 +31,7 @@ void LinearCoder::PrintGenerator() {
 }
 
 void LinearCoder::PrintMatrix(const std::valarray<bool>& matrix, int columns) {
-  for (int i = 0; i < matrix.size(); ++i) {
+  for (size_t i = 0; i < matrix.size(); ++i) {
     std::cout << matrix[i] << " ";
     if ((i + 1) % columns == 0) {
       std::cout << std::endl;

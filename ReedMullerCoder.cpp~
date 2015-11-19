@@ -85,7 +85,25 @@ std::valarray<bool> ReedMullerCoder::Decode(const std::valarray<bool>& code) {
           }
         }
       }
+
+/*
+      std::cout << "New code: ";
+      for (int i = 0; i < code_length_; ++i) {
+        std::cout << new_code[i];
+      }
+      std::cout << std::endl;
+*/
     }
+
+/*
+    std::cout << std::endl;
+    std::cout << std::endl;
+    for (int j = 0; j < length_power_; ++j) {
+      std::cout << monom_degree[decoded_signal_bit][j];
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+*/
 
     // Majority logic deduction
     for (int fixed_arg = 0; fixed_arg < pow(2, length_power_ - weight); ++fixed_arg) {
@@ -97,18 +115,28 @@ std::valarray<bool> ReedMullerCoder::Decode(const std::valarray<bool>& code) {
         for (int arg_bit = length_power_ - 1; arg_bit >= 0; --arg_bit) {
           if (monom_degree[decoded_signal_bit][arg_bit] == 1) {
             code_index += static_cast<bool>(changing_arg & (1 << changing_arg_bit)) * pow(2, length_power_ - 1 - arg_bit);
+//            std::cout << "-" <<  static_cast<bool>(changing_arg & (1 << changing_arg_bit)) << "-";
             changing_arg_bit++;
           } else {
             code_index += static_cast<bool>(fixed_arg & (1 << fixed_arg_bit)) * pow(2, length_power_ - 1 - arg_bit);
+//            std::cout << "=" << static_cast<bool>(fixed_arg & (1 << fixed_arg_bit)) << "=";
             fixed_arg_bit++;
           }
         }
+//        std::cout << " Code index/value: " << code_index << " " << new_code[code_index] << std::endl;
+
         vote ^= new_code[code_index];
       }
+
+//      std::cout << "Vote: " <<  vote << std::endl;
       vote == 1 ? ++ones : ++zeros;
     }
+    
     decoded_signal[decoded_signal_bit] = (ones > zeros);
+
+//    std::cout << "Zeros/ones: " << zeros << "/" << ones << std::endl;
   }
+
   return decoded_signal;
 }
 
@@ -149,74 +177,43 @@ bool ReedMullerCoder::MonomDegreeOrder(const std::valarray<bool>& lhs, const std
 }
 
 ReedMullerSystematicCoder::ReedMullerSystematicCoder(int order, int length_power) :
-  ReedMullerCoder(order, length_power),
-  signal_permutation_(std::valarray<bool>(signal_length_ * signal_length_)),
-  signal_inverse_permutation_(std::valarray<bool>(signal_length_ * signal_length_)),
-  code_permutation_(std::valarray<bool>(code_length_ * code_length_)),
-  code_inverse_permutation_(std::valarray<bool>(code_length_ * code_length_))
+  ReedMullerCoder(order, length_power)
 {
-  std::vector<int> new_index(code_length_, -1);
-  std::vector<int> old_index(code_length_, -1);
-  for (int new_column = 0; new_column < signal_length_; ++new_column) {
-    for (int old_column = 0; old_column < code_length_; ++old_column) {
-      if (Weight(generator_[std::slice(new_column * code_length_ + old_column,
-            signal_length_ - new_column, code_length_)]) == 1 &&
-          Weight(generator_[std::slice((new_column + 1) * code_length_ + old_column,
-            signal_length_ - new_column - 1, code_length_)]) == 0) {
-        new_index[new_column] = old_column;
-        old_index[old_column] = new_column;
-        break;
-      }
+  std::vector<int> new_index(signal_length_);
+  for (int new_row = 0; new_row < signal_length_; ++new_row) {
+    for (int old_row = 0; old_row < signal_length_; ++old_row) {
+      std::cout << generator_.size() << " " << code_length_ << " " << old_row << " " << new_row << std::endl;
+//      if (Weight(generator_[std::slice(code_length_ * old_row, new_row - 1, 1)]) == 0 &&
+//          Weight(generator_[std::slice(code_length_ * old_row, new_row, 1)]) == 1) {
+//        new_index[new_row] = old_row;
+//        break;
+//      }
     }
   }
 
-  for (int new_column = signal_length_; new_column < code_length_; ++new_column) {
-    for (int old_column = 0; old_column < code_length_; ++old_column) {
-      if (old_index[old_column] == -1) {
-        new_index[new_column] = old_column;
-        old_index[old_column] = new_column;
-        break;
-      }
-    }
+  for (int new_row = 0; new_row < signal_length_; ++new_row) {
+    std::cout << new_index[new_row] << " ";
   }
-
-  for (int row = 0; row < code_length_; ++row) {
-    code_permutation_[row * code_length_ + old_index[row]] = 1;
-    code_inverse_permutation_[row * code_length_ + new_index[row]] = 1;
-  }
-
-  for (int column = 0; column < signal_length_; ++column) {
-    signal_inverse_permutation_[std::slice(column, signal_length_, signal_length_)] = generator_[std::slice(new_index[column], signal_length_, code_length_)];
-  }
-
-  std::valarray<bool> mrow(signal_length_);
-  std::valarray<bool> mcolumn(signal_length_);
-  for (int row = 0; row < signal_length_; ++row) {
-    for (int column = 0; column < signal_length_; ++column) {
-      mrow = signal_permutation_[std::slice(row * signal_length_, signal_length_, 1)];
-      mcolumn = generator_[std::slice(new_index[column], signal_length_, code_length_)];
-      signal_permutation_[row * signal_length_ + column] = (Weight(mrow * mcolumn) % 2) != (row == column);
-    }
-  }
+  std::cout << std::endl;
 }
 
 std::valarray<bool> ReedMullerSystematicCoder::Code(const std::valarray<bool>& signal) {
-  std::valarray<bool> new_signal;
-  std::valarray<bool> code;
-
-  new_signal = MultiplyVectorToMatrix(signal, signal_permutation_);
-  code = MultiplyVectorToMatrix(ReedMullerCoder::Code(new_signal), code_permutation_);
-
-  return code;
+  return ToSystematic(ReedMullerCoder::Code(signal));
 }
 
 std::valarray<bool> ReedMullerSystematicCoder::Decode(const std::valarray<bool>& code) {
-  std::valarray<bool> new_code;
-  std::valarray<bool> decoded_signal;
+  return ReedMullerCoder::Decode(FromSystematic(code));
+}
 
-  new_code = MultiplyVectorToMatrix(code, code_inverse_permutation_);
-  decoded_signal = MultiplyVectorToMatrix(ReedMullerCoder::Decode(new_code), signal_inverse_permutation_);
+std::valarray<bool> ReedMullerSystematicCoder::ToSystematic(const std::valarray<bool>& code) {
+  return MultiplyVectorToMatrix(code, systematic_factor_);
+}
 
-  return decoded_signal;
+std::valarray<bool> ReedMullerSystematicCoder::FromSystematic(const std::valarray<bool>& code) {
+  return MultiplyVectorToMatrix(code, systematic_divider_);
+}
+
+void ReedMullerSystematicCoder::PrintSystematicFactor() {
+  PrintMatrix(systematic_factor_, code_length_);
 }
 

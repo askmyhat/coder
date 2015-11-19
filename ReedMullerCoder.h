@@ -21,23 +21,19 @@ class ReedMullerCoder : public LinearCoder {
   static bool MonomDegreeOrder(const std::valarray<bool>& lhs, const std::valarray<bool>& rhs);
 };
 
-/*
 class ReedMullerSystematicCoder : public ReedMullerCoder {
  public:
   ReedMullerSystematicCoder(int order, int length_power);
 
   std::valarray<bool> Code(const std::valarray<bool>& code);
   std::valarray<bool> Decode(const std::valarray<bool>& code);
-  std::valarray<bool> ToSystematic(const std::valarray<bool>& code);
-  std::valarray<bool> FromSystematic(const std::valarray<bool>& code);
 
-  void PrintSystematicFactor();
-
- private:
-  std::valarray<bool> systematic_factor_;
-  std::valarray<bool> systematic_divider_;
+ protected:
+  std::valarray<bool> signal_permutation_;
+  std::valarray<bool> signal_inverse_permutation_;
+  std::valarray<bool> code_permutation_;
+  std::valarray<bool> code_inverse_permutation_;
 };
-*/
 
 #endif // REED_MULLER_CODER_H
 

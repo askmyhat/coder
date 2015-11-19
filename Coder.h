@@ -1,36 +1,47 @@
 #ifndef CODER_H
 #define CODER_H
 
+
 #include <cmath>
 #include <iostream>
 #include <valarray>
-#include <numeric>
+#include <vector>
 
-// TODO: exception when signal_length_ < 0;
-// TODO: make Coder abstract;
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/vector.hpp>
+
 class Coder {
  public:
-  Coder() : signal_length_(0) {}
-  Coder(int signal_length) : signal_length_(signal_length) {}
+  Coder();
+  Coder(int signal_length);
   virtual ~Coder() {};
 
-  int signal_length() const { return signal_length_; };
-
-  static std::size_t Weight(const std::valarray<bool>& string) {
-    std::size_t weight = 0;
-    for (int bit = 0; bit < string.size(); ++bit) {
-      weight += static_cast<int>(string[bit]);
-    }
-    return weight;
-  }
-
- protected:
-  int signal_length_;
+  inline int signal_length() const;
+  inline int code_length() const;
+  inline double speed() const;
+  virtual int distance() = 0;
 
   virtual std::valarray<bool> Code(const std::valarray<bool>& word) = 0;
   virtual std::valarray<bool> Decode(const std::valarray<bool>& word) = 0;
-  virtual int distance() = 0;
+
+  static int Weight(const std::valarray<bool>& string);
+
+ protected:
+  int signal_length_;
+  int code_length_;
 };
+
+int Coder::signal_length() const {
+  return signal_length_;
+}
+
+int Coder::code_length() const {
+  return code_length_;
+}
+
+double Coder::speed() const {
+  return static_cast<double>(signal_length_) / code_length_;
+}
 
 #endif // CODER_H
 
