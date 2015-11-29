@@ -10,8 +10,9 @@
 
 class HammingCoder : public LinearCoder {
  public:
-  HammingCoder (int signal_length);
+  HammingCoder(int signal_length);
   std::valarray<bool> Decode(const std::valarray<bool>& code);
+
   int distance();
 };
 

@@ -10,13 +10,13 @@
 
 class ReedMullerCoder : public LinearCoder {
  public:
-  ReedMullerCoder(int order, int length_power);
+  ReedMullerCoder(int order, int length_param);
   std::valarray<bool> Decode(const std::valarray<bool>& code);
   int distance();
 
  protected:
   int order_;
-  int length_power_;
+  int length_param_;
   static int Binomial(int n, int k);
   static bool MonomDegreeOrder(const std::valarray<bool>& lhs, const std::valarray<bool>& rhs);
 };

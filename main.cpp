@@ -6,6 +6,7 @@
 #include <ctime>
 #include <cstdlib>
 
+// TODO: timing
 
 int main() {
   int first_param = 2;
